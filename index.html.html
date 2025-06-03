@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Namibian ECN Presidential Voting System</title>
+<style>
+  /* Namibian ECN colors and branding inspired style */
+  :root {
+    --dark-blue: #00337f;
+    --light-blue: #00aaff;
+    --yellow: #ffcb05;
+    --white: #ffffff;
+    --gray-dark: #333333;
+    --gray-light: #f3f3f3;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: var(--gray-light);
+    font-family: var(--font-family);
+    color: var(--gray-dark);
+  }
+  header {
+    background: var(--dark-blue);
+    padding: 1rem 2rem;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  header img {
+    width: 60px;
+    height: auto;
+  }
+  header h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  nav {
+    margin-left: auto;
+    display: flex;
+    gap: 1rem;
+  }
+  nav button {
+    background: var(--yellow);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--dark-blue);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  nav button:hover {
+    background: #f1b800;
+  }
+  main {
+    max-width: 600px;
+    margin: 2rem auto 4rem auto;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 0.15);
+  }
+  h2 {
+    text-align: center;
+    color: var(--dark-blue);
+    margin-bottom: 1.5rem;
+  }
+  form label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    margin-top: 1.1rem;
+  }
+  form input[type="text"],
+  form input[type="number"],
+  form select,
+  form input[type="password"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  form input[type="text"]:focus,
+  form input[type="number"]:focus,
+  form select:focus,
+  form input[type="password"]:focus {
+    outline: none;
+    border-color: var(--light-blue);
+    box-shadow: 0 0 5px var(--light-blue);
+  }
+  button.primary-btn {
+    background-color: var(--dark-blue);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    margin-top: 1.8rem;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 700;
+    transition: background 0.3s ease;
+  }
+  button.primary-btn:hover {
+    background-color: #001f4d;
+  }
+  .message {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: red;
+    min-height: 1.3rem;
+    text-align: center;
+  }
+  /* Page containers (sections) switching by class */
+  section.page {
+    display: none;
+  }
+  section.page.active {
+    display: block;
+  }
+  /* Candidate Table */
+  .ballot-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  .ballot-container .logo {
+    display: block;
+    margin: 0 auto 1rem auto;
+    max-width: 120px;
+    height: auto;
+  }
+  .ballot-container h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .ballot-container p {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+  table.candidate-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.candidate-table th,
+  table.candidate-table td {
+    border: 1px solid var(--light-blue);
+    padding: 0.75rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+  table.candidate-table th {
+    background-color: var(--dark-blue);
+    color: white;
+    font-weight: 700;
+  }
+  table.candidate-table tr:hover {
+    background-color: var(--light-blue);
+    color: white;
+  }
+  table.candidate-table img.photo {
+    width: 80px;
+    height: auto;
+    border-radius: 8px;
+  }
+  table.candidate-table img.symbol {
+    width: 50px;
+    height: auto;
+  }
+  table.candidate-table input[type="radio"] {
+    transform: scale(1.4);
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  /* Responsive */
+  @media (max-width: 720px) {
+    main {
+      margin: 1rem;
+      padding: 1.2rem 1.5rem;
+    }
+    nav {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    nav button {
+      flex: 1 1 45%;
+      margin-bottom: 0.5rem;
+    }
+    table.candidate-table img.photo {
+      width: 60px;
+    }
+    table.candidate-table img.symbol {
+      width: 40px;
+    }
+  }
+  @media (max-width: 480px) {
+    table.candidate-table th,
+    table.candidate-table td {
+      padding: 0.6rem 0.4rem;
+      font-size: 0.9rem;
+    }
+    table.candidate-table img.photo {
+      width: 50px;
+    }
+    table.candidate-table img.symbol {
+      width: 30px;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <img src="photos/ECN LOGO.png" />
+  <h1>Namibian ECN Presidential Voting System</h1>
+  <nav>
+    <button id="nav-home">Home</button>
+    <button id="nav-register">Register</button>
+    <button id="nav-login">Login</button>
+  </nav>
+</header>
+<main>
+  <!-- Home Page -->
+  <section id="page-home" class="page active">
+    <h2>Welcome to the Namibian ECN Presidential Voting System</h2>
+    <p>This secure and transparent system allows all registered Namibian voters to vote for the president safely. Please register if you are a first-time voter or login to proceed.</p>
+  </section>
+  <!-- Registration Page -->
+  <section id="page-register" class="page">
+    <h2>Voter Registration</h2>
+    <form id="register-form">
+      <label for="reg-surname">Surname</label>
+      <input type="text" id="reg-surname" name="surname" required/>
+
+      <label for="reg-name">Name</label>
+      <input type="text" id="reg-name" name="name" required/>
+
+      <label for="reg-id-number">ID Number</label>
+      <input type="number" id="reg-id-number" name="id_number" required pattern="\\d{11,15}" title="Enter a valid ID number."/>
+
+      <label for="reg-region">Region</label>
+      <select id="reg-region" name="region" required>
+        <option value="">--Select Region--</option>
+        <option>Khomas</option>
+        <option>Otjozondjupa</option>
+        <option>Zambezi</option>
+        <option>Erongo</option>
+        <option>Oshana</option>
+        <option>Oshikoto</option>
+        <option>Kunene</option>
+        <option>Ohangwena</option>
+        <option>Kavango West</option>
+        <option>Kavango East</option>
+        <option>Hardap</option>
+        <option>Karas</option>
+        <option>Omusati</option>
+        <option>Omaheke</option>
+      </select>
+
+      <label for="reg-constituency">Constituency</label>
+      <input type="text" id="reg-constituency" name="constituency" required/>
+
+      <label for="reg-gender">Gender</label>
+      <select id="reg-gender" name="gender" required>
+        <option value="">--Select Gender--</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+
+      <label for="reg-vrn">Voter Registration Number (VRN)</label>
+      <input type="number" id="reg-vrn" name="vrn" required pattern="\\w{4,}" title="Enter your VRN."/>
+
+      <button type="submit" class="primary-btn">Register</button>
+    </form>
+    <div class="message" id="register-message"></div>
+  </section>
+  <!-- Login Page -->
+  <section id="page-login" class="page">
+    <h2>Voter Login</h2>
+    <form id="login-form">
+      <label for="login-id-number">ID Number</label>
+      <input type="number" id="login-id-number" name="id_number" required pattern="\\d{11,15}" title="Enter your ID number." />
+
+      <label for="login-vrn">Voter Registration Number (VRN)</label>
+      <input type="number" id="login-vrn" name="vrn" required pattern="\\w{4,}" title="Enter your VRN."/>
+
+      <button type="submit" class="primary-btn">Login</button>
+    </form>
+    <div class="message" id="login-message"></div>
+  </section>
+  <!-- Voting Page -->
+  <section id="page-voting" class="page">
+    <div class="ballot-container">
+      <img src="c:\Users\Admin\Desktop\PRESIDENTIAL VOTING SYSTEM\photos\ECN LOGO.png" alt="ECN Logo" class="logo" />
+      <h2>Presidential Election 2025</h2>
+      <p><strong>Mark one candidate only</strong></p>
+      <form id="voting-form">
+        <table class="candidate-table">
+          <thead>
+            <tr>
+              <th>Picture</th>
+              <th>Name</th>
+              <th>Party</th>
+              <th>Party Logo</th>
+              <th>Vote</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="photos/NETUMBO NANDI NDAITWA.png" alt="Netumbo Nandi Ndaitwa" class="photo" /></td>
+              <td>Netumbo Nandi Ndaitwa</td>
+              <td>SWAPO</td>
+              <td><img src="photos/SWAPPO LOGO.png" alt="SWAPO Symbol" class="symbol" /></td>
+              <td><input type="radio" name="vote" value="Netumbo Nandi Ndaitwa" required /></td>
+            </tr>
+            <tr>
+              <td><img src="photos/PANDULENI IITULA.png" alt="Panduleni Itula" class="photo" /></td>
+              <td>Panduleni Itula</td>
+              <td>IPC</td>
+              <td><img src="photos/IPC LOGO.png" alt="IPC Symbol" class="symbol" /></td>
+              <td><input type="radio" name="vote" value="Panduleni Itula" required /></td>
+            </tr>
+            <tr>
+              <td><img src="photos/JOB AMUPANDA.png" alt="Job Amupanda" class="photo" /></td>
+              <td>Job Amupanda</td>
+              <td>AR</td>
+              <td><img src="photos/AR LOGO.png" alt="AR Symbol" class="symbol" /></td>
+              <td><input type="radio" name="vote" value="Job Amupanda" required /></td>
+            </tr>
+            <tr>
+              <td><img src="photos/MCENRY VENANI.png" alt="McHenry Venaani" class="photo" /></td>
+              <td>McHenry Venaani</td>
+              <td>PDM</td>
+              <td><img src="photos/PDM LOGO.png" alt="PDM Symbol" class="symbol" /></td>
+              <td><input type="radio" name="vote" value="McHenry Venaani" required /></td>
+            </tr>
+            <tr>
+              <td><img src="photos/Mike Kavekotora.png" alt="Mike Kavekotora" class="photo" /></td>
+              <td>Mike Kavekotora</td>
+              <td>RDP</td>
+              <td><img src="photos/RDP LOGO.png" alt="RDP Symbol" class="symbol" /></td>
+              <td><input type="radio" name="vote" value="Mike Kavekotora" required /></td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="submit" class="primary-btn">Submit Vote</button>
+      </form>
+      <div class="message" id="voting-message"></div>
+    </div>
+  </section>
+</main>
+<footer>
+  &copy; 2025 Namibian ECN. All rights reserved.
+</footer>
+<script>
+  // Navigation between pages
+  const pages = ['home', 'register', 'login', 'voting'];
+  const showPage = (page) => {
+    pages.forEach(p => {
+      document.getElementById('page-' + p).classList.toggle('active', p === page);
+    });
+    clearMessages();
+  };
+
+  document.getElementById('nav-home').addEventListener('click', () => showPage('home'));
+  document.getElementById('nav-register').addEventListener('click', () => showPage('register'));
+  document.getElementById('nav-login').addEventListener('click', () => showPage('login'));
+
+  // Utility: Clear messages on all pages
+  function clearMessages() {
+    ['register-message', 'login-message', 'voting-message'].forEach(id => {
+      document.getElementById(id).textContent = '';
+    });
+  }
+
+  // LocalStorage keys (simulate database)
+  const USERS_KEY = 'ec_registered_voters';
+  const VOTES_KEY = 'ec_votes';
+
+  // Helper: load users
+  function loadUsers() {
+    return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+  }
+  // Helper: save users
+  function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+  // Helper: load votes
+  function loadVotes() {
+    return JSON.parse(localStorage.getItem(VOTES_KEY) || '[]');
+  }
+  // Helper: save votes
+  function saveVotes(votes) {
+    localStorage.setItem(VOTES_KEY, JSON.stringify(votes));
+  }
+
+  // Registration Form Handling
+  document.getElementById('register-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearMessages();
+
+    const surname = e.target.surname.value.trim();
+    const name = e.target.name.value.trim();
+    const id_number = e.target.id_number.value.trim();
+    const region = e.target.region.value;
+    const constituency = e.target.constituency.value.trim();
+    const gender = e.target.gender.value;
+    const vrn = e.target.vrn.value.trim();
+
+    const users = loadUsers();
+    if (users.some(u => u.id_number === id_number || u.vrn === vrn)) {
+      document.getElementById('register-message').textContent = 'This ID number or VRN is already registered.';
+      return;
+    }
+
+    // Save user without biometric credential
+    users.push({ surname, name, id_number, region, constituency, gender, vrn });
+    saveUsers(users);
+
+    alert('Registration successful!');
+    showPage('login');
+  });
+
+  // Login Form Handling
+  document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearMessages();
+
+    const id_number = e.target.id_number.value.trim();
+    const vrn = e.target.vrn.value.trim();
+
+    const users = loadUsers();
+    const user = users.find(u => u.id_number === id_number && u.vrn === vrn);
+    if (!user) {
+      document.getElementById('login-message').textContent = 'ID number and VRN do not match any registered voter.';
+      return;
+    }
+    window.loggedInUser = user; // store globally for session
+
+    // Show voting page
+    showPage('voting');
+  });
+
+  // Voting Form handling
+  document.getElementById('voting-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearMessages();
+    const formData = new FormData(e.target);
+    const candidate = formData.get('vote');
+    if (!window.loggedInUser) {
+      document.getElementById('voting-message').textContent = 'User not logged in.';
+      return;
+    }
+
+    const votes = loadVotes();
+    // Prevent user voting twice
+    if (votes.some(v => v.id_number === window.loggedInUser.id_number)) {
+      document.getElementById('voting-message').textContent = 'You have already voted. Thank you!';
+      return;
+    }
+    votes.push({
+      id_number: window.loggedInUser.id_number,
+      candidate,
+      timestamp: new Date().toISOString()
+    });
+    saveVotes(votes);
+    alert('Thank you for voting! Your vote has been recorded.');
+    // Log out user and back to home
+    window.loggedInUser = null;
+    showPage('home');
+  });
+
+  // On load show home
+  showPage('home');
+</script>
+</body>
+</html>
+
